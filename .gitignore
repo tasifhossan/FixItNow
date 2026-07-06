@@ -1,0 +1,35 @@
+# Dependency directories
+node_modules/
+.yarn/
+.pnp
+.pnp.js
+
+# Testing
+coverage/
+.nyc_output/
+
+# Next.js
+.next/
+out/
+
+# Production
+dist/
+build/
+
+# Environment variables
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Misc
+.DS_Store
+*.pem
+
+# Prisma
+/generated/prisma
+prisma/migrations
+prisma/dev.db
+
+# npm
+package-lock.json

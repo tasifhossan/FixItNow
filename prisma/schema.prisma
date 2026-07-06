@@ -1,0 +1,137 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  CUSTOMER
+  TECHNICIAN
+  ADMIN
+}
+
+enum BookingStatus {
+  REQUESTED
+  ACCEPTED
+  DECLINED
+  PAID
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentProvider {
+  STRIPE
+  SSLCOMMERZ
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+model User {
+  id                 String             @id @default(uuid())
+  name               String
+  email              String             @unique
+  password           String
+  phone              String
+  role               Role
+  isBlocked          Boolean            @default(false)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  technicianProfile  TechnicianProfile?
+  bookingsAsCustomer Booking[]          @relation("CustomerBookings")
+  reviewsAsReviewer  Review[]           @relation("ReviewerReviews")
+}
+
+model TechnicianProfile {
+  id            String    @id @default(uuid())
+  userId        String    @unique
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bio           String?
+  skills        String[]
+  hourlyRate    Float
+  isVerified    Boolean   @default(false)
+  isAvailable   Boolean   @default(true)
+  averageRating Float     @default(0)
+  totalReviews  Int       @default(0)
+  bookings      Booking[] @relation("TechnicianBookings")
+  services      Service[]
+  reviews       Review[]  @relation("TechnicianReviews")
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  description String?
+  services    Service[]
+}
+
+model Service {
+  id          String              @id @default(uuid())
+  name        String
+  description String?
+  categoryId  String
+  category    Category            @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  basePrice   Float
+  technicians TechnicianProfile[]
+  bookings    Booking[]
+}
+
+model Booking {
+  id            String            @id @default(uuid())
+  customerId    String
+  customer      User              @relation("CustomerBookings", fields: [customerId], references: [id], onDelete: Restrict)
+  technicianId  String
+  technician    TechnicianProfile @relation("TechnicianBookings", fields: [technicianId], references: [id], onDelete: Restrict)
+  serviceId     String
+  service       Service           @relation(fields: [serviceId], references: [id], onDelete: Restrict)
+  status        BookingStatus @default(REQUESTED)
+  scheduledDate DateTime
+  address       String
+  notes         String?
+  totalAmount   Float
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  payment       Payment?
+  review        Review?
+
+  @@index([customerId])
+  @@index([technicianId])
+  @@index([status])
+}
+
+model Payment {
+  id            String          @id @default(uuid())
+  bookingId     String          @unique
+  booking       Booking         @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+  amount        Float
+  currency      String
+  provider      PaymentProvider
+  transactionId String?
+  status        PaymentStatus   @default(PENDING)
+  paidAt        DateTime?
+  createdAt     DateTime        @default(now())
+}
+
+model Review {
+  id           String            @id @default(uuid())
+  bookingId    String            @unique
+  booking      Booking           @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+  reviewerId   String
+  reviewer     User              @relation("ReviewerReviews", fields: [reviewerId], references: [id], onDelete: Restrict)
+  technicianId String
+  technician   TechnicianProfile @relation("TechnicianReviews", fields: [technicianId], references: [id], onDelete: Cascade)
+  rating       Int
+  comment      String?
+  createdAt    DateTime          @default(now())
+}
