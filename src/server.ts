@@ -2,6 +2,7 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import config from './config/index.js';
 import { authRoutes } from './modules/auth/auth.route.js';
+import { userRoutes } from './modules/user/user.route.js';
 import type { Request, Response, NextFunction } from 'express';
 
 const app = express();
@@ -12,6 +13,7 @@ app.use(cookieParser());
 
 // Routes
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/users', userRoutes);
 
 // Global Error Handler
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
