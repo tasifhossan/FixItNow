@@ -1,5 +1,4 @@
-import pkg from '../generated/prisma/client.js';
-const { PrismaClient } = pkg;
+import { PrismaClient } from '../generated/prisma/client.js';
 import { PrismaPg } from '@prisma/adapter-pg';
 import pg from 'pg';
 import * as bcrypt from 'bcryptjs';
