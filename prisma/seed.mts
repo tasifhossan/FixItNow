@@ -44,6 +44,93 @@ async function main() {
   });
 
   console.log(`✅ Admin user seeded successfully: ${admin.email}`);
+
+  const categoriesData = [
+    {
+      name: 'Plumbing',
+      description: 'Plumbing services including leak repairs, unclogging, and installations.',
+      services: [
+        { name: 'Pipe Leak Repair', description: 'Fixing leaky water or drainage pipes.', basePrice: 500 },
+        { name: 'Drain Unclogging', description: 'Clearing clogged sinks, toilets, or sewer lines.', basePrice: 400 },
+        { name: 'Taps & Faucets Repair/Replacement', description: 'Repairing or installing new kitchen/bathroom taps.', basePrice: 350 },
+      ],
+    },
+    {
+      name: 'Electrical',
+      description: 'Electrical wiring, socket repairs, and appliance installations.',
+      services: [
+        { name: 'Wiring Inspection & Fixing', description: 'Checking home wiring safety and resolving issues.', basePrice: 600 },
+        { name: 'Switch or Socket Replacement', description: 'Installing new electrical wall outlets or switchboard keys.', basePrice: 250 },
+        { name: 'Ceiling Fan Installation', description: 'Mounting and connection of ceiling or wall fans.', basePrice: 450 },
+      ],
+    },
+    {
+      name: 'Cleaning',
+      description: 'Professional deep cleaning services for apartments, kitchen, and upholstery.',
+      services: [
+        { name: 'Full Home Deep Cleaning', description: 'Thorough dusting, vacuuming, mopping and sanitization.', basePrice: 3000 },
+        { name: 'Kitchen Deep Cleaning', description: 'Removal of oil stains and grease, cleaning counters and exhaust fan.', basePrice: 1500 },
+        { name: 'Sofa or Carpet Cleaning', description: 'Shampooing and cleaning stains from sofas or carpet mats.', basePrice: 800 },
+      ],
+    },
+    {
+      name: 'AC Repair',
+      description: 'Air conditioner maintenance, servicing, gas charging, and installation.',
+      services: [
+        { name: 'AC Servicing (Basic)', description: 'Filter wash, cleaning blower, and inspecting gas pressure.', basePrice: 700 },
+        { name: 'AC Gas Charge/Refill', description: 'Checking for leaks and charging gas for optimal cooling.', basePrice: 2500 },
+        { name: 'AC Installation or Shifting', description: 'Safe uninstallation, relocation, and complete setup.', basePrice: 1800 },
+      ],
+    },
+  ];
+
+  let seededCategoriesCount = 0;
+  let seededServicesCount = 0;
+
+  for (const cat of categoriesData) {
+    const category = await prisma.category.upsert({
+      where: { name: cat.name },
+      update: {
+        description: cat.description,
+      },
+      create: {
+        name: cat.name,
+        description: cat.description,
+      },
+    });
+    seededCategoriesCount++;
+
+    for (const service of cat.services) {
+      const existingService = await prisma.service.findFirst({
+        where: {
+          name: service.name,
+          categoryId: category.id,
+        },
+      });
+
+      if (existingService) {
+        await prisma.service.update({
+          where: { id: existingService.id },
+          data: {
+            description: service.description,
+            basePrice: service.basePrice,
+          },
+        });
+      } else {
+        await prisma.service.create({
+          data: {
+            name: service.name,
+            description: service.description,
+            basePrice: service.basePrice,
+            categoryId: category.id,
+          },
+        });
+      }
+      seededServicesCount++;
+    }
+  }
+
+  console.log(`✅ Seeding completed: Seeded ${seededCategoriesCount} categories and ${seededServicesCount} services.`);
 }
 
 main()
