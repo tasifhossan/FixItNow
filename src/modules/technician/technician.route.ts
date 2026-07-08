@@ -32,6 +32,21 @@ router.patch(
   technicianController.toggleAvailability
 );
 
+router.post(
+  '/me/services',
+  auth,
+  roleGuard('TECHNICIAN'),
+  validateRequest(technicianValidation.assignServicesValidation),
+  technicianController.assignServices
+);
+
+router.delete(
+  '/me/services/:serviceId',
+  auth,
+  roleGuard('TECHNICIAN'),
+  technicianController.removeService
+);
+
 router.get('/:id', technicianController.getTechnicianById);
 
 router.patch(

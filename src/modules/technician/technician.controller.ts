@@ -100,6 +100,44 @@ const verifyTechnician = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const assignServices = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user?.userId;
+  if (!userId) {
+    throw new AppError(401, 'You are not authorized');
+  }
+
+  const { serviceIds } = req.body;
+  const result = await technicianService.assignServices(userId, serviceIds);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Services assigned successfully',
+    data: result,
+  });
+});
+
+const removeService = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user?.userId;
+  if (!userId) {
+    throw new AppError(401, 'You are not authorized');
+  }
+
+  const { serviceId } = req.params;
+  if (!serviceId || typeof serviceId !== 'string') {
+    throw new AppError(400, 'Service ID is required');
+  }
+
+  const result = await technicianService.removeService(userId, serviceId);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Service removed successfully',
+    data: result,
+  });
+});
+
 export const technicianController = {
   getAllTechnicians,
   getTechnicianById,
@@ -107,4 +145,6 @@ export const technicianController = {
   updateMyTechnicianProfile,
   toggleAvailability,
   verifyTechnician,
+  assignServices,
+  removeService,
 };

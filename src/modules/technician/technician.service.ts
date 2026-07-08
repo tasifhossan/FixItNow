@@ -65,6 +65,7 @@ const getAllTechnicians = async (query: {
         user: {
           select: userSelect,
         },
+        services: true,
       },
       orderBy: {
         id: 'asc',
@@ -89,6 +90,7 @@ const getTechnicianById = async (id: string) => {
       user: {
         select: userSelect,
       },
+      services: true,
     },
   });
 
@@ -185,6 +187,89 @@ const verifyTechnician = async (id: string) => {
   return updatedProfile;
 };
 
+const assignServices = async (userId: string, serviceIds: string[]) => {
+  const profile = await prisma.technicianProfile.findUnique({
+    where: { userId },
+  });
+
+  if (!profile) {
+    throw new AppError(404, 'Technician profile not found');
+  }
+
+  const existingServices = await prisma.service.findMany({
+    where: {
+      id: {
+        in: serviceIds,
+      },
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  const existingIds = existingServices.map((s) => s.id);
+  const invalidIds = serviceIds.filter((id) => !existingIds.includes(id));
+
+  if (invalidIds.length > 0) {
+    throw new AppError(400, `Invalid service ID(s): ${invalidIds.join(', ')}`);
+  }
+
+  const updatedProfile = await prisma.technicianProfile.update({
+    where: { userId },
+    data: {
+      services: {
+        connect: serviceIds.map((id) => ({ id })),
+      },
+    },
+    include: {
+      user: {
+        select: userSelect,
+      },
+      services: true,
+    },
+  });
+
+  return updatedProfile;
+};
+
+const removeService = async (userId: string, serviceId: string) => {
+  const profile = await prisma.technicianProfile.findUnique({
+    where: { userId },
+    include: {
+      services: {
+        where: {
+          id: serviceId,
+        },
+      },
+    },
+  });
+
+  if (!profile) {
+    throw new AppError(404, 'Technician profile not found');
+  }
+
+  if (profile.services.length === 0) {
+    throw new AppError(404, 'Service is not assigned to this technician');
+  }
+
+  const updatedProfile = await prisma.technicianProfile.update({
+    where: { userId },
+    data: {
+      services: {
+        disconnect: { id: serviceId },
+      },
+    },
+    include: {
+      user: {
+        select: userSelect,
+      },
+      services: true,
+    },
+  });
+
+  return updatedProfile;
+};
+
 export const technicianService = {
   getAllTechnicians,
   getTechnicianById,
@@ -192,4 +277,6 @@ export const technicianService = {
   updateMyTechnicianProfile,
   toggleAvailability,
   verifyTechnician,
+  assignServices,
+  removeService,
 };

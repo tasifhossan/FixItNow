@@ -16,7 +16,16 @@ const toggleAvailabilityValidation = z.object({
   }),
 });
 
+const assignServicesValidation = z.object({
+  body: z.object({
+    serviceIds: z
+      .array(z.string())
+      .min(1, 'At least one service ID is required'),
+  }),
+});
+
 export const technicianValidation = {
   updateTechnicianProfileValidation,
   toggleAvailabilityValidation,
+  assignServicesValidation,
 };
