@@ -8,6 +8,7 @@ import { categoryRoutes } from './modules/category/category.route.js';
 import { serviceRoutes } from './modules/service/service.route.js';
 import { bookingRoutes } from './modules/booking/booking.route.js';
 import { paymentRoutes } from './modules/payment/payment.route.js';
+import { reviewRoutes } from './modules/review/review.route.js';
 import notFound from './middlewares/notFound.js';
 import globalErrorHandler from './middlewares/globalErrorHandler.js';
 
@@ -37,6 +38,7 @@ app.use('/api/v1/categories', categoryRoutes);
 app.use('/api/v1/services', serviceRoutes);
 app.use('/api/v1/bookings', bookingRoutes);
 app.use('/api/v1/payments', paymentRoutes);
+app.use('/api/v1/reviews', reviewRoutes);
 
 // 404 Handler
 app.use(notFound);
