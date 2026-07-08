@@ -1222,6 +1222,32 @@
         }
       },
       "response": []
+    },
+    {
+      "name": "Admin Verifies Technician",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": ""
+        },
+        "url": {
+          "raw": "{{baseUrl}}/technicians/971fc280-e751-4cdf-81c0-f46fbfce3e8f/verify",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "technicians",
+            "971fc280-e751-4cdf-81c0-f46fbfce3e8f",
+            "verify"
+          ]
+        }
+      },
+      "response": []
     }
   ],
   "event": [
