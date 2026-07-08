@@ -19,8 +19,5 @@ export default {
   sslcommerzStorePassword: process.env.SSLCOMMERZ_STORE_PASSWORD,
   sslcommerzIsLive: process.env.SSLCOMMERZ_IS_LIVE === 'true',
   baseUrl: process.env.BASE_URL,
-  SSLCOMMERZ_STORE_ID: process.env.SSLCOMMERZ_STORE_ID,
-  SSLCOMMERZ_STORE_PASSWORD: process.env.SSLCOMMERZ_STORE_PASSWORD,
-  SSLCOMMERZ_IS_LIVE: process.env.SSLCOMMERZ_IS_LIVE === 'true',
-  BASE_URL: process.env.BASE_URL,
+  frontendUrl: process.env.FRONTEND_URL || 'http://localhost:3000',
 };
