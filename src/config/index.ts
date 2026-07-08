@@ -15,4 +15,12 @@ export default {
     access_expires_in: process.env.JWT_ACCESS_EXPIRES_IN || '15m',
     refresh_expires_in: process.env.JWT_REFRESH_EXPIRES_IN || '30d',
   },
+  sslcommerzStoreId: process.env.SSLCOMMERZ_STORE_ID,
+  sslcommerzStorePassword: process.env.SSLCOMMERZ_STORE_PASSWORD,
+  sslcommerzIsLive: process.env.SSLCOMMERZ_IS_LIVE === 'true',
+  baseUrl: process.env.BASE_URL,
+  SSLCOMMERZ_STORE_ID: process.env.SSLCOMMERZ_STORE_ID,
+  SSLCOMMERZ_STORE_PASSWORD: process.env.SSLCOMMERZ_STORE_PASSWORD,
+  SSLCOMMERZ_IS_LIVE: process.env.SSLCOMMERZ_IS_LIVE === 'true',
+  BASE_URL: process.env.BASE_URL,
 };

@@ -7,6 +7,7 @@ import { technicianRoutes } from './modules/technician/technician.route.js';
 import { categoryRoutes } from './modules/category/category.route.js';
 import { serviceRoutes } from './modules/service/service.route.js';
 import { bookingRoutes } from './modules/booking/booking.route.js';
+import { paymentRoutes } from './modules/payment/payment.route.js';
 import type { Request, Response, NextFunction } from 'express';
 
 const app = express();
@@ -22,6 +23,7 @@ app.use('/api/v1/technicians', technicianRoutes);
 app.use('/api/v1/categories', categoryRoutes);
 app.use('/api/v1/services', serviceRoutes);
 app.use('/api/v1/bookings', bookingRoutes);
+app.use('/api/v1/payments', paymentRoutes);
 
 // Global Error Handler
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
