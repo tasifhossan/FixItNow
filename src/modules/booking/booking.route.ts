@@ -35,5 +35,13 @@ router.get(
   bookingController.getBookingById
 );
 
+router.patch(
+  '/:id/respond',
+  auth,
+  roleGuard('TECHNICIAN'),
+  validateRequest(bookingValidation.respondToBookingValidation),
+  bookingController.respondToBooking
+);
+
 export const bookingRoutes = router;
 export default bookingRoutes;

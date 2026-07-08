@@ -25,6 +25,15 @@ const createBookingValidation = z.object({
   }),
 });
 
+const respondToBookingValidation = z.object({
+  body: z.object({
+    action: z.enum(['ACCEPT', 'DECLINE'], {
+      message: 'Action must be either ACCEPT or DECLINE',
+    }),
+  }),
+});
+
 export const bookingValidation = {
   createBookingValidation,
+  respondToBookingValidation,
 };

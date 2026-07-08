@@ -240,9 +240,64 @@ const getBookingById = async (
   return booking;
 };
 
+const respondToBooking = async (
+  userId: string,
+  bookingId: string,
+  action: 'ACCEPT' | 'DECLINE'
+) => {
+  const technicianProfile = await prisma.technicianProfile.findUnique({
+    where: { userId },
+  });
+
+  if (!technicianProfile) {
+    throw new AppError(404, 'Technician profile not found');
+  }
+
+  const booking = await prisma.booking.findUnique({
+    where: { id: bookingId },
+  });
+
+  if (!booking) {
+    throw new AppError(404, 'Booking not found');
+  }
+
+  if (booking.technicianId !== technicianProfile.id) {
+    throw new AppError(403, 'You do not have permission to respond to this booking');
+  }
+
+  if (booking.status !== 'REQUESTED') {
+    throw new AppError(400, 'Booking is not in REQUESTED status');
+  }
+
+  const updatedStatus = action === 'ACCEPT' ? 'ACCEPTED' : 'DECLINED';
+
+  const result = await prisma.booking.update({
+    where: { id: bookingId },
+    data: { status: updatedStatus },
+    include: {
+      service: true,
+      technician: {
+        include: {
+          user: {
+            select: userSelect,
+          },
+        },
+      },
+      customer: {
+        select: userSelect,
+      },
+      payment: true,
+      review: true,
+    },
+  });
+
+  return result;
+};
+
 export const bookingService = {
   createBooking,
   getMyBookingsAsCustomer,
   getMyBookingsAsTechnician,
   getBookingById,
+  respondToBooking,
 };
