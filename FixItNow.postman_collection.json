@@ -14,7 +14,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n  \"name\": \"Faraby Customer\",\r\n  \"email\": \"customer3@test.com\",\r\n  \"password\": \"test1234\",\r\n  \"phone\": \"01700000003\",\r\n  \"role\": \"CUSTOMER\"\r\n}",
+          "raw": "{\r\n  \"name\": \"Tasif Customer\",\r\n  \"email\": \"tasif.customer@test.com\",\r\n  \"password\": \"testpassword123\",\r\n  \"phone\": \"01811223344\",\r\n  \"role\": \"CUSTOMER\"\r\n}\r\n",
           "options": {
             "raw": {
               "language": "json"
@@ -44,7 +44,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n  \"name\": \"John Technician\",\r\n  \"email\": \"john.tech@example.com\",\r\n  \"password\": \"securepassword123\",\r\n  \"phone\": \"+1234567890\",\r\n  \"role\": \"TECHNICIAN\"\r\n}",
+          "raw": "{\r\n  \"name\": \"Fahad Technician\",\r\n  \"email\": \"fahad.technician@test.com\",\r\n  \"password\": \"testpassword123\",\r\n  \"phone\": \"01711223344\",\r\n  \"role\": \"TECHNICIAN\"\r\n}\r\n",
           "options": {
             "raw": {
               "language": "json"
@@ -206,7 +206,7 @@
       "response": []
     },
     {
-      "name": "User Profile Update",
+      "name": "Customer Profile Update",
       "request": {
         "auth": {
           "type": "bearer",
@@ -222,7 +222,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n  \"name\": \"John Updated\",\r\n  \"phone\": \"01812345678\",\r\n  \r\n  \"oldPassword\": \"Password123\",\r\n  \"newPassword\": \"NewPassword789\"\r\n}\r\n\r\n",
+          "raw": "{\r\n  \"name\": \"Tasif Hossan\",\r\n  \"phone\": \"01812345678\",\r\n  \r\n  \"oldPassword\": \"testpassword123\",\r\n  \"newPassword\": \"NewPassword789\"\r\n}\r\n\r\n",
           "options": {
             "raw": {
               "language": "json"
@@ -269,7 +269,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n  \"email\": \"customer1@test.com\",\r\n  \"password\": \"test1234\"\r\n}",
+          "raw": "{\r\n  \"email\": \"tasif.customer@test.com\",\r\n  \"password\": \"testpassword123\"\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -662,7 +662,7 @@
       "response": []
     },
     {
-      "name": "Booking Creation",
+      "name": "Book a Service (As Customer)",
       "request": {
         "auth": {
           "type": "bearer",
@@ -678,7 +678,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n  \"technicianId\": \"2d00864e-1444-4b27-91a9-e1c83f3d04a6\",\r\n  \"serviceId\": \"40bbf72a-cdaa-487a-ae93-45901e1ac386\",\r\n  \"scheduledDate\": \"2026-09-01T12:00:00.000Z\", \r\n  \"address\": \"123 Main Street, Sector 6\",\r\n  \"notes\": \"Please arrive on time.\"\r\n}",
+          "raw": "{\r\n  \"technicianId\": \"2d00864e-1444-4b27-91a9-e1c83f3d04a6\",\r\n  \"serviceId\": \"40bbf72a-cdaa-487a-ae93-45901e1ac386\",\r\n  \"scheduledDate\": \"2026-07-15T10:00:00.000Z\",\r\n  \"address\": \"123 Green Road, Chattogram\",\r\n  \"notes\": \"Please bring pipe replacement parts.\"\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -768,7 +768,7 @@
       "response": []
     },
     {
-      "name": "Send the Response Request",
+      "name": "Accept the Booking (As Technician)",
       "request": {
         "auth": {
           "type": "bearer",
@@ -806,7 +806,7 @@
       "response": []
     },
     {
-      "name": "Initiate the Payment Session",
+      "name": "Initiate Payment (As Customer)",
       "request": {
         "auth": {
           "type": "bearer",
@@ -912,7 +912,7 @@
       "response": []
     },
     {
-      "name": "Verify Status Progression (Technician Only)",
+      "name": "Transition to COMPLETED  (As Technician)",
       "request": {
         "auth": {
           "type": "bearer",
@@ -984,7 +984,7 @@
       "response": []
     },
     {
-      "name": "Create a Review (Customer Only)",
+      "name": "Submit a Review (As Customer)",
       "request": {
         "auth": {
           "type": "bearer",
@@ -1020,7 +1020,7 @@
       "response": []
     },
     {
-      "name": "Fetch Admin Statistics",
+      "name": "Check Admin Stats (As Admin)",
       "protocolProfileBehavior": {
         "disableBodyPruning": true
       },
@@ -1186,7 +1186,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n  \"email\": \"technician1@test.com\",\r\n  \"password\": \"test1234\"\r\n}",
+          "raw": "{\r\n  \"email\": \"fahad.technician@test.com\",\r\n  \"password\": \"testpassword123\"\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -1244,6 +1244,82 @@
             "technicians",
             "971fc280-e751-4cdf-81c0-f46fbfce3e8f",
             "verify"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Technician Profile (As Technician)",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{accessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"bio\": \"Experienced certified plumber with 5+ years of experience.\",\r\n  \"skills\": [\"leak repair\", \"pipe unclogging\"],\r\n  \"hourlyRate\": 400\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/technicians/me/profile",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "technicians",
+            "me",
+            "profile"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Transition to IN_PROGRESS (As Technician)",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{accessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"status\": \"IN_PROGRESS\"\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/bookings/<booking-id>/status",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "bookings",
+            "<booking-id>",
+            "status"
           ]
         }
       },
