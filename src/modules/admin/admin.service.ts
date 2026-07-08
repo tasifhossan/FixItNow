@@ -1,4 +1,17 @@
+import AppError from '../../errors/AppError.js';
+import type { Prisma } from '../../../generated/prisma/client.js';
 import { prisma } from '../../shared/prisma.js';
+
+const userSelect = {
+  id: true,
+  name: true,
+  email: true,
+  phone: true,
+  role: true,
+  isBlocked: true,
+  createdAt: true,
+  updatedAt: true,
+};
 
 const getDashboardStats = async () => {
   const [
@@ -123,6 +136,95 @@ const getDashboardStats = async () => {
   };
 };
 
+const getAllBookingsAdmin = async (query: {
+  status?: string;
+  customerId?: string;
+  technicianId?: string;
+  page?: string | number;
+  limit?: string | number;
+}) => {
+  const { status, customerId, technicianId, page = 1, limit = 10 } = query;
+  const parsedPage = Number(page) || 1;
+  const parsedLimit = Number(limit) || 10;
+  const skip = (parsedPage - 1) * parsedLimit;
+
+  const whereConditions: Prisma.BookingWhereInput = {};
+
+  if (status) {
+    whereConditions.status = status as any;
+  }
+  if (customerId) {
+    whereConditions.customerId = customerId;
+  }
+  if (technicianId) {
+    whereConditions.technicianId = technicianId;
+  }
+
+  const [total, result] = await prisma.$transaction([
+    prisma.booking.count({ where: whereConditions }),
+    prisma.booking.findMany({
+      where: whereConditions,
+      skip,
+      take: parsedLimit,
+      include: {
+        customer: {
+          select: userSelect,
+        },
+        technician: {
+          include: {
+            user: {
+              select: userSelect,
+            },
+          },
+        },
+        service: true,
+        payment: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    }),
+  ]);
+
+  return {
+    meta: {
+      page: parsedPage,
+      limit: parsedLimit,
+      total,
+    },
+    data: result,
+  };
+};
+
+const getBookingDetailsAdmin = async (id: string) => {
+  const result = await prisma.booking.findUnique({
+    where: { id },
+    include: {
+      customer: {
+        select: userSelect,
+      },
+      technician: {
+        include: {
+          user: {
+            select: userSelect,
+          },
+        },
+      },
+      service: true,
+      payment: true,
+      review: true,
+    },
+  });
+
+  if (!result) {
+    throw new AppError(404, 'Booking not found');
+  }
+
+  return result;
+};
+
 export const adminService = {
   getDashboardStats,
+  getAllBookingsAdmin,
+  getBookingDetailsAdmin,
 };
