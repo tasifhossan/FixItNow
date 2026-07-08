@@ -43,5 +43,19 @@ router.patch(
   bookingController.respondToBooking
 );
 
+router.patch(
+  '/:id/status',
+  auth,
+  roleGuard('TECHNICIAN'),
+  validateRequest(bookingValidation.updateBookingStatusValidation),
+  bookingController.updateBookingStatus
+);
+
+router.patch(
+  '/:id/cancel',
+  auth,
+  bookingController.cancelBooking
+);
+
 export const bookingRoutes = router;
 export default bookingRoutes;

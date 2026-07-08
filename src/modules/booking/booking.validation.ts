@@ -33,7 +33,16 @@ const respondToBookingValidation = z.object({
   }),
 });
 
+const updateBookingStatusValidation = z.object({
+  body: z.object({
+    status: z.enum(['IN_PROGRESS', 'COMPLETED'], {
+      message: 'Status is required',
+    }),
+  }),
+});
+
 export const bookingValidation = {
   createBookingValidation,
   respondToBookingValidation,
+  updateBookingStatusValidation,
 };

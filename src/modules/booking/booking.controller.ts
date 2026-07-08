@@ -102,10 +102,58 @@ const respondToBooking = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const updateBookingStatus = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user?.userId;
+  if (!userId) {
+    throw new AppError(401, 'You are not authorized');
+  }
+
+  const { id } = req.params;
+  const { status } = req.body;
+
+  if (!id || typeof id !== 'string') {
+    throw new AppError(400, 'Booking ID is required');
+  }
+
+  const result = await bookingService.updateBookingStatus(userId, id, status);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Booking status updated successfully',
+    data: result,
+  });
+});
+
+const cancelBooking = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user?.userId;
+  const role = req.user?.role;
+  if (!userId || !role) {
+    throw new AppError(401, 'You are not authorized');
+  }
+
+  const { id } = req.params;
+
+  if (!id || typeof id !== 'string') {
+    throw new AppError(400, 'Booking ID is required');
+  }
+
+  const result = await bookingService.cancelBooking(userId, role, id);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Booking cancelled successfully',
+    data: result,
+  });
+});
+
 export const bookingController = {
   createBooking,
   getMyBookingsAsCustomer,
   getMyBookingsAsTechnician,
   getBookingById,
   respondToBooking,
+  updateBookingStatus,
+  cancelBooking,
 };

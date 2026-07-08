@@ -294,10 +294,124 @@ const respondToBooking = async (
   return result;
 };
 
+const updateBookingStatus = async (
+  userId: string,
+  bookingId: string,
+  newStatus: 'IN_PROGRESS' | 'COMPLETED'
+) => {
+  const technicianProfile = await prisma.technicianProfile.findUnique({
+    where: { userId },
+  });
+
+  if (!technicianProfile) {
+    throw new AppError(404, 'Technician profile not found');
+  }
+
+  const booking = await prisma.booking.findUnique({
+    where: { id: bookingId },
+  });
+
+  if (!booking) {
+    throw new AppError(404, 'Booking not found');
+  }
+
+  if (booking.technicianId !== technicianProfile.id) {
+    throw new AppError(403, 'You do not have permission to update this booking');
+  }
+
+  if (newStatus === 'IN_PROGRESS' && booking.status !== 'PAID') {
+    throw new AppError(
+      400,
+      `Invalid transition. Cannot change status from ${booking.status} to IN_PROGRESS. Only PAID bookings can be started.`
+    );
+  }
+
+  if (newStatus === 'COMPLETED' && booking.status !== 'IN_PROGRESS') {
+    throw new AppError(
+      400,
+      `Invalid transition. Cannot change status from ${booking.status} to COMPLETED. Only IN_PROGRESS bookings can be completed.`
+    );
+  }
+
+  const result = await prisma.booking.update({
+    where: { id: bookingId },
+    data: { status: newStatus },
+    include: {
+      service: true,
+      technician: {
+        include: {
+          user: {
+            select: userSelect,
+          },
+        },
+      },
+      customer: {
+        select: userSelect,
+      },
+      payment: true,
+      review: true,
+    },
+  });
+
+  return result;
+};
+
+const cancelBooking = async (
+  userId: string,
+  userRole: string,
+  bookingId: string
+) => {
+  const booking = await prisma.booking.findUnique({
+    where: { id: bookingId },
+  });
+
+  if (!booking) {
+    throw new AppError(404, 'Booking not found');
+  }
+
+  const isCustomer = booking.customerId === userId;
+  const isAdmin = userRole === 'ADMIN';
+
+  if (!isCustomer && !isAdmin) {
+    throw new AppError(403, 'You do not have permission to cancel this booking');
+  }
+
+  if (booking.status !== 'REQUESTED' && booking.status !== 'ACCEPTED') {
+    throw new AppError(
+      400,
+      `Cannot cancel booking because it is already in ${booking.status} status`
+    );
+  }
+
+  const result = await prisma.booking.update({
+    where: { id: bookingId },
+    data: { status: 'CANCELLED' },
+    include: {
+      service: true,
+      technician: {
+        include: {
+          user: {
+            select: userSelect,
+          },
+        },
+      },
+      customer: {
+        select: userSelect,
+      },
+      payment: true,
+      review: true,
+    },
+  });
+
+  return result;
+};
+
 export const bookingService = {
   createBooking,
   getMyBookingsAsCustomer,
   getMyBookingsAsTechnician,
   getBookingById,
   respondToBooking,
+  updateBookingStatus,
+  cancelBooking,
 };
