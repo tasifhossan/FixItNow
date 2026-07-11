@@ -206,90 +206,6 @@
       "response": []
     },
     {
-      "name": "Customer Profile Update",
-      "request": {
-        "auth": {
-          "type": "bearer",
-          "bearer": [
-            {
-              "key": "token",
-              "value": "{{accessToken}}",
-              "type": "string"
-            }
-          ]
-        },
-        "method": "PATCH",
-        "header": [],
-        "body": {
-          "mode": "raw",
-          "raw": "{\r\n  \"name\": \"Tasif Hossan\",\r\n  \"phone\": \"01812345678\",\r\n  \r\n  \"oldPassword\": \"testpassword123\",\r\n  \"newPassword\": \"NewPassword789\"\r\n}\r\n\r\n",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        },
-        "url": {
-          "raw": "{{baseUrl}}/users/me",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "users",
-            "me"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Login Customer",
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "const res = pm.response.json();\r",
-              "if (res.success && res.data && res.data.accessToken) {\r",
-              "    pm.collectionVariables.set(\"accessToken\", res.data.accessToken);\r",
-              "    console.log(\"Logged in as:\", res.data.user.email, \"| role:\", res.data.user.role);\r",
-              "}"
-            ],
-            "type": "text/javascript",
-            "packages": {},
-            "requests": {}
-          }
-        }
-      ],
-      "request": {
-        "auth": {
-          "type": "noauth"
-        },
-        "method": "POST",
-        "header": [],
-        "body": {
-          "mode": "raw",
-          "raw": "{\r\n  \"email\": \"tasif.customer@test.com\",\r\n  \"password\": \"testpassword123\"\r\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        },
-        "url": {
-          "raw": "{{baseUrl}}/auth/login",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "auth",
-            "login"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
       "name": "Get All Users (with Search & Pagination)",
       "protocolProfileBehavior": {
         "disableBodyPruning": true
@@ -336,6 +252,221 @@
               "key": "limit",
               "value": "10"
             }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Admin Verifies Technician",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": ""
+        },
+        "url": {
+          "raw": "{{baseUrl}}/technicians/971fc280-e751-4cdf-81c0-f46fbfce3e8f/verify",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "technicians",
+            "971fc280-e751-4cdf-81c0-f46fbfce3e8f",
+            "verify"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Login Technician",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const res = pm.response.json();\r",
+              "if (res.success && res.data && res.data.accessToken) {\r",
+              "    pm.collectionVariables.set(\"accessToken\", res.data.accessToken);\r",
+              "    console.log(\"Logged in as:\", res.data.user.email, \"| role:\", res.data.user.role);\r",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\": \"fahad.technician@test.com\",\r\n  \"password\": \"testpassword123\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Technician Profile (As Technician)",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{accessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"bio\": \"Experienced certified plumber with 5+ years of experience.\",\r\n  \"skills\": [\"leak repair\", \"pipe unclogging\"],\r\n  \"hourlyRate\": 400\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/technicians/me/profile",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "technicians",
+            "me",
+            "profile"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Technician Profile",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{accessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/technicians/me/profile",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "technicians",
+            "me",
+            "profile"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Assign Services to the Technician",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{accessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"serviceIds\": [\r\n    \"40bbf72a-cdaa-487a-ae93-45ac386\"\r\n  ]\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/technicians/me/services",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "technicians",
+            "me",
+            "services"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Verify the Services display on profile",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{accessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/technicians/2d00864e-1444-4b27-91a9-e1c83f3d04a6",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "technicians",
+            "2d00864e-1444-4b27-91a9-e1c83f3d04a6"
           ]
         }
       },
@@ -555,23 +686,33 @@
       "response": []
     },
     {
-      "name": "Assign Services to the Technician",
+      "name": "Login Customer",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const res = pm.response.json();\r",
+              "if (res.success && res.data && res.data.accessToken) {\r",
+              "    pm.collectionVariables.set(\"accessToken\", res.data.accessToken);\r",
+              "    console.log(\"Logged in as:\", res.data.user.email, \"| role:\", res.data.user.role);\r",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
       "request": {
         "auth": {
-          "type": "bearer",
-          "bearer": [
-            {
-              "key": "token",
-              "value": "{{accessToken}}",
-              "type": "string"
-            }
-          ]
+          "type": "noauth"
         },
         "method": "POST",
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n  \"serviceIds\": [\r\n    \"40bbf72a-cdaa-487a-ae93-45ac386\"\r\n  ]\r\n}\r\n",
+          "raw": "{\r\n  \"email\": \"tasif.customer@test.com\",\r\n  \"password\": \"testpassword123\"\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -579,24 +720,37 @@
           }
         },
         "url": {
-          "raw": "{{baseUrl}}/technicians/me/services",
+          "raw": "{{baseUrl}}/auth/login",
           "host": [
             "{{baseUrl}}"
           ],
           "path": [
-            "technicians",
-            "me",
-            "services"
+            "auth",
+            "login"
           ]
         }
       },
       "response": []
     },
     {
-      "name": "Verify the Services display on profile",
-      "protocolProfileBehavior": {
-        "disableBodyPruning": true
+      "name": "Get Technicians Public",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/technicians",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "technicians"
+          ]
+        }
       },
+      "response": []
+    },
+    {
+      "name": "Customer Profile Update",
       "request": {
         "auth": {
           "type": "bearer",
@@ -608,11 +762,11 @@
             }
           ]
         },
-        "method": "GET",
+        "method": "PATCH",
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "",
+          "raw": "{\r\n  \"name\": \"Tasif Hossan\",\r\n  \"phone\": \"01812345678\",\r\n  \r\n  \"oldPassword\": \"testpassword123\",\r\n  \"newPassword\": \"NewPassword789\"\r\n}\r\n\r\n",
           "options": {
             "raw": {
               "language": "json"
@@ -620,42 +774,13 @@
           }
         },
         "url": {
-          "raw": "{{baseUrl}}/technicians/2d00864e-1444-4b27-91a9-e1c83f3d04a6",
+          "raw": "{{baseUrl}}/users/me",
           "host": [
             "{{baseUrl}}"
           ],
           "path": [
-            "technicians",
-            "2d00864e-1444-4b27-91a9-e1c83f3d04a6"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Get Technician Profile",
-      "request": {
-        "auth": {
-          "type": "bearer",
-          "bearer": [
-            {
-              "key": "token",
-              "value": "{{accessToken}}",
-              "type": "string"
-            }
-          ]
-        },
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/technicians/me/profile",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "technicians",
-            "me",
-            "profile"
+            "users",
+            "me"
           ]
         }
       },
@@ -765,7 +890,33 @@
           ]
         }
       },
-      "response": []
+      "response": [
+        {
+          "name": "Test Viewing Assigned Bookings as Technician",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{baseUrl}}/bookings/assigned-to-me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bookings",
+                "assigned-to-me"
+              ]
+            }
+          },
+          "_postman_previewlanguage": null,
+          "header": null,
+          "cookie": [],
+          "body": null
+        }
+      ]
     },
     {
       "name": "Accept the Booking (As Technician)",
@@ -879,7 +1030,7 @@
       "response": []
     },
     {
-      "name": "Verify Cancellation (Customer or Admin)",
+      "name": "Transition to IN_PROGRESS (As Technician)",
       "request": {
         "auth": {
           "type": "bearer",
@@ -895,17 +1046,22 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": ""
+          "raw": "{\r\n  \"status\": \"IN_PROGRESS\"\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
         },
         "url": {
-          "raw": "{{baseUrl}}/bookings/5d47ca87-97f3-4fcb-81d3-9f20b1468bf4/cancel",
+          "raw": "{{baseUrl}}/bookings/<booking-id>/status",
           "host": [
             "{{baseUrl}}"
           ],
           "path": [
             "bookings",
-            "5d47ca87-97f3-4fcb-81d3-9f20b1468bf4",
-            "cancel"
+            "<booking-id>",
+            "status"
           ]
         }
       },
@@ -950,6 +1106,42 @@
       "response": []
     },
     {
+      "name": "Submit a Review (As Customer)",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{accessToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"bookingId\": \"<a-completed-booking-id>\",\r\n  \"rating\": 5,\r\n  \"comment\": \"Outstanding service! Highly recommended.\"\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/reviews",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "reviews"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
       "name": "Get Reviews for a Technician (Public)",
       "protocolProfileBehavior": {
         "disableBodyPruning": true
@@ -984,7 +1176,7 @@
       "response": []
     },
     {
-      "name": "Submit a Review (As Customer)",
+      "name": "Verify Cancellation (Customer or Admin)",
       "request": {
         "auth": {
           "type": "bearer",
@@ -996,24 +1188,21 @@
             }
           ]
         },
-        "method": "POST",
+        "method": "PATCH",
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n  \"bookingId\": \"<a-completed-booking-id>\",\r\n  \"rating\": 5,\r\n  \"comment\": \"Outstanding service! Highly recommended.\"\r\n}\r\n",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
+          "raw": ""
         },
         "url": {
-          "raw": "{{baseUrl}}/reviews",
+          "raw": "{{baseUrl}}/bookings/5d47ca87-97f3-4fcb-81d3-9f20b1468bf4/cancel",
           "host": [
             "{{baseUrl}}"
           ],
           "path": [
-            "reviews"
+            "bookings",
+            "5d47ca87-97f3-4fcb-81d3-9f20b1468bf4",
+            "cancel"
           ]
         }
       },
@@ -1161,169 +1350,6 @@
         }
       },
       "response": []
-    },
-    {
-      "name": "Login Technician",
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "const res = pm.response.json();\r",
-              "if (res.success && res.data && res.data.accessToken) {\r",
-              "    pm.collectionVariables.set(\"accessToken\", res.data.accessToken);\r",
-              "    console.log(\"Logged in as:\", res.data.user.email, \"| role:\", res.data.user.role);\r",
-              "}"
-            ],
-            "type": "text/javascript",
-            "packages": {},
-            "requests": {}
-          }
-        }
-      ],
-      "request": {
-        "method": "POST",
-        "header": [],
-        "body": {
-          "mode": "raw",
-          "raw": "{\r\n  \"email\": \"fahad.technician@test.com\",\r\n  \"password\": \"testpassword123\"\r\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        },
-        "url": {
-          "raw": "{{baseUrl}}/auth/login",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "auth",
-            "login"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Get Technicians Public",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/technicians",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "technicians"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Admin Verifies Technician",
-      "request": {
-        "auth": {
-          "type": "noauth"
-        },
-        "method": "PATCH",
-        "header": [],
-        "body": {
-          "mode": "raw",
-          "raw": ""
-        },
-        "url": {
-          "raw": "{{baseUrl}}/technicians/971fc280-e751-4cdf-81c0-f46fbfce3e8f/verify",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "technicians",
-            "971fc280-e751-4cdf-81c0-f46fbfce3e8f",
-            "verify"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Update Technician Profile (As Technician)",
-      "request": {
-        "auth": {
-          "type": "bearer",
-          "bearer": [
-            {
-              "key": "token",
-              "value": "{{accessToken}}",
-              "type": "string"
-            }
-          ]
-        },
-        "method": "PATCH",
-        "header": [],
-        "body": {
-          "mode": "raw",
-          "raw": "{\r\n  \"bio\": \"Experienced certified plumber with 5+ years of experience.\",\r\n  \"skills\": [\"leak repair\", \"pipe unclogging\"],\r\n  \"hourlyRate\": 400\r\n}\r\n",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        },
-        "url": {
-          "raw": "{{baseUrl}}/technicians/me/profile",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "technicians",
-            "me",
-            "profile"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Transition to IN_PROGRESS (As Technician)",
-      "request": {
-        "auth": {
-          "type": "bearer",
-          "bearer": [
-            {
-              "key": "token",
-              "value": "{{accessToken}}",
-              "type": "string"
-            }
-          ]
-        },
-        "method": "PATCH",
-        "header": [],
-        "body": {
-          "mode": "raw",
-          "raw": "{\r\n  \"status\": \"IN_PROGRESS\"\r\n}\r\n",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        },
-        "url": {
-          "raw": "{{baseUrl}}/bookings/<booking-id>/status",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "bookings",
-            "<booking-id>",
-            "status"
-          ]
-        }
-      },
-      "response": []
     }
   ],
   "event": [
@@ -1357,7 +1383,7 @@
     },
     {
       "key": "accessToken",
-      "value": ""
+      "secret": true
     },
     {
       "key": "supabase_service_role_api_key_0stf",
