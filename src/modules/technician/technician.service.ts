@@ -270,6 +270,140 @@ const removeService = async (userId: string, serviceId: string) => {
   return updatedProfile;
 };
 
+function getSlotsForDay(startTimeStr: string, endTimeStr: string, durationMinutes: number = 60): string[] {
+  const slots: string[] = [];
+  const startParts = startTimeStr.split(':');
+  const endParts = endTimeStr.split(':');
+  const startH = Number(startParts[0] ?? 0);
+  const startM = Number(startParts[1] ?? 0);
+  const endH = Number(endParts[0] ?? 0);
+  const endM = Number(endParts[1] ?? 0);
+  
+  let currentMinutes = startH * 60 + startM;
+  const endMinutes = endH * 60 + endM;
+  
+  while (currentMinutes + durationMinutes <= endMinutes) {
+    const h = Math.floor(currentMinutes / 60);
+    const m = currentMinutes % 60;
+    slots.push(`${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`);
+    currentMinutes += durationMinutes;
+  }
+  return slots;
+}
+
+const updateWorkingHours = async (
+  userId: string,
+  workingHoursData: Array<{ dayOfWeek: number; startTime: string; endTime: string }>
+) => {
+  const profile = await prisma.technicianProfile.findUnique({
+    where: { userId },
+  });
+
+  if (!profile) {
+    throw new AppError(404, 'Technician profile not found');
+  }
+
+  const result = await prisma.$transaction(async (tx) => {
+    await tx.workingHours.deleteMany({
+      where: { technicianProfileId: profile.id },
+    });
+
+    const created = await Promise.all(
+      workingHoursData.map((w) =>
+        tx.workingHours.create({
+          data: {
+            technicianProfileId: profile.id,
+            dayOfWeek: w.dayOfWeek,
+            startTime: w.startTime,
+            endTime: w.endTime,
+          },
+        })
+      )
+    );
+    return created;
+  });
+
+  return result;
+};
+
+const getMyWorkingHours = async (userId: string) => {
+  const profile = await prisma.technicianProfile.findUnique({
+    where: { userId },
+  });
+
+  if (!profile) {
+    throw new AppError(404, 'Technician profile not found');
+  }
+
+  const workingHours = await prisma.workingHours.findMany({
+    where: { technicianProfileId: profile.id },
+    orderBy: { dayOfWeek: 'asc' },
+  });
+
+  return workingHours;
+};
+
+const getAvailableSlots = async (id: string, dateString: string) => {
+  const profile = await prisma.technicianProfile.findUnique({
+    where: { id },
+  });
+
+  if (!profile) {
+    throw new AppError(404, 'Technician profile not found');
+  }
+
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) {
+    throw new AppError(400, 'Invalid date format');
+  }
+
+  const dayOfWeek = date.getUTCDay();
+
+  const workingHours = await prisma.workingHours.findUnique({
+    where: {
+      technicianProfileId_dayOfWeek: {
+        technicianProfileId: profile.id,
+        dayOfWeek,
+      },
+    },
+  });
+
+  if (!workingHours) {
+    return [];
+  }
+
+  const allSlots = getSlotsForDay(workingHours.startTime, workingHours.endTime, 60);
+
+  const startOfDay = new Date(`${dateString}T00:00:00.000Z`);
+  const endOfDay = new Date(`${dateString}T23:59:59.999Z`);
+
+  const bookings = await prisma.booking.findMany({
+    where: {
+      technicianId: profile.id,
+      scheduledDate: {
+        gte: startOfDay,
+        lte: endOfDay,
+      },
+      status: {
+        notIn: ['CANCELLED', 'DECLINED'],
+      },
+    },
+    select: {
+      scheduledDate: true,
+    },
+  });
+
+  const bookedSlots = bookings.map((b) => {
+    const d = new Date(b.scheduledDate);
+    const h = d.getUTCHours();
+    const m = d.getUTCMinutes();
+    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+  });
+
+  const availableSlots = allSlots.filter((slot) => !bookedSlots.includes(slot));
+  return availableSlots;
+};
+
 export const technicianService = {
   getAllTechnicians,
   getTechnicianById,
@@ -279,4 +413,7 @@ export const technicianService = {
   verifyTechnician,
   assignServices,
   removeService,
+  updateWorkingHours,
+  getMyWorkingHours,
+  getAvailableSlots,
 };

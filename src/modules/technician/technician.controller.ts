@@ -138,6 +138,60 @@ const removeService = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const updateWorkingHours = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user?.userId;
+  if (!userId) {
+    throw new AppError(401, 'You are not authorized');
+  }
+
+  const result = await technicianService.updateWorkingHours(userId, req.body);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Working hours updated successfully',
+    data: result,
+  });
+});
+
+const getMyWorkingHours = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user?.userId;
+  if (!userId) {
+    throw new AppError(401, 'You are not authorized');
+  }
+
+  const result = await technicianService.getMyWorkingHours(userId);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Working hours retrieved successfully',
+    data: result,
+  });
+});
+
+const getAvailableSlots = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { date } = req.query;
+
+  if (!id || typeof id !== 'string') {
+    throw new AppError(400, 'Technician ID is required');
+  }
+
+  if (!date || typeof date !== 'string') {
+    throw new AppError(400, 'Date query parameter is required');
+  }
+
+  const result = await technicianService.getAvailableSlots(id, date);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Available slots retrieved successfully',
+    data: result,
+  });
+});
+
 export const technicianController = {
   getAllTechnicians,
   getTechnicianById,
@@ -147,4 +201,7 @@ export const technicianController = {
   verifyTechnician,
   assignServices,
   removeService,
+  updateWorkingHours,
+  getMyWorkingHours,
+  getAvailableSlots,
 };

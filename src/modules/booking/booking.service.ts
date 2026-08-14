@@ -13,6 +13,27 @@ const userSelect = {
   updatedAt: true,
 };
 
+function getSlotsForDay(startTimeStr: string, endTimeStr: string, durationMinutes: number = 60): string[] {
+  const slots: string[] = [];
+  const startParts = startTimeStr.split(':');
+  const endParts = endTimeStr.split(':');
+  const startH = Number(startParts[0] ?? 0);
+  const startM = Number(startParts[1] ?? 0);
+  const endH = Number(endParts[0] ?? 0);
+  const endM = Number(endParts[1] ?? 0);
+  
+  let currentMinutes = startH * 60 + startM;
+  const endMinutes = endH * 60 + endM;
+  
+  while (currentMinutes + durationMinutes <= endMinutes) {
+    const h = Math.floor(currentMinutes / 60);
+    const m = currentMinutes % 60;
+    slots.push(`${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`);
+    currentMinutes += durationMinutes;
+  }
+  return slots;
+}
+
 const createBooking = async (
   customerId: string,
   payload: {
@@ -41,6 +62,46 @@ const createBooking = async (
 
   if (!technician.isAvailable) {
     throw new AppError(400, 'Technician is not available');
+  }
+
+  // 1a. Verify working hours for scheduledDate exist and the requested time is a valid slot
+  const reqDate = new Date(payload.scheduledDate);
+  const dayOfWeek = reqDate.getUTCDay();
+  const reqHours = reqDate.getUTCHours();
+  const reqMinutes = reqDate.getUTCMinutes();
+  const reqTimeStr = `${String(reqHours).padStart(2, '0')}:${String(reqMinutes).padStart(2, '0')}`;
+
+  const workingHours = await prisma.workingHours.findUnique({
+    where: {
+      technicianProfileId_dayOfWeek: {
+        technicianProfileId: payload.technicianId,
+        dayOfWeek,
+      },
+    },
+  });
+
+  if (!workingHours) {
+    throw new AppError(400, 'Technician does not have working hours configured for this day');
+  }
+
+  const allSlots = getSlotsForDay(workingHours.startTime, workingHours.endTime, 60);
+  if (!allSlots.includes(reqTimeStr)) {
+    throw new AppError(400, 'Requested booking time is not a valid 60-minute time slot for this technician');
+  }
+
+  // 1b. Verify no conflict/overlap with an existing active booking
+  const conflictBooking = await prisma.booking.findFirst({
+    where: {
+      technicianId: payload.technicianId,
+      scheduledDate: reqDate,
+      status: {
+        notIn: ['CANCELLED', 'DECLINED'],
+      },
+    },
+  });
+
+  if (conflictBooking) {
+    throw new AppError(400, 'This slot is already booked for this technician');
   }
 
   // 2. Verify serviceId exists

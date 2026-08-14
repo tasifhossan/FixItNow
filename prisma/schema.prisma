@@ -70,6 +70,7 @@ model TechnicianProfile {
   bookings      Booking[] @relation("TechnicianBookings")
   services      Service[]
   reviews       Review[]  @relation("TechnicianReviews")
+  workingHours  WorkingHours[]
 }
 
 model Category {
@@ -138,3 +139,15 @@ model Review {
   comment      String?
   createdAt    DateTime          @default(now())
 }
+
+model WorkingHours {
+  id                  String            @id @default(uuid())
+  technicianProfileId String
+  technicianProfile   TechnicianProfile @relation(fields: [technicianProfileId], references: [id], onDelete: Cascade)
+  dayOfWeek           Int               // 0 (Sunday) to 6 (Saturday)
+  startTime           String            // "HH:mm"
+  endTime             String            // "HH:mm"
+
+  @@unique([technicianProfileId, dayOfWeek])
+}
+

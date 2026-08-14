@@ -49,6 +49,26 @@ router.delete(
 
 router.get('/:id', technicianController.getTechnicianById);
 
+router.get(
+  '/:id/available-slots',
+  technicianController.getAvailableSlots
+);
+
+router.put(
+  '/me/working-hours',
+  auth,
+  roleGuard('TECHNICIAN'),
+  validateRequest(technicianValidation.updateWorkingHoursValidation),
+  technicianController.updateWorkingHours
+);
+
+router.get(
+  '/me/working-hours',
+  auth,
+  roleGuard('TECHNICIAN'),
+  technicianController.getMyWorkingHours
+);
+
 router.patch(
   '/:id/verify',
   auth,
