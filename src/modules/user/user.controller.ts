@@ -3,6 +3,7 @@ import catchAsync from '../../utils/catchAsync.js';
 import sendResponse from '../../utils/sendResponse.js';
 import { userService } from './user.service.js';
 import AppError from '../../errors/AppError.js';
+import multer from 'multer';
 
 const getMyProfile = catchAsync(async (req: Request, res: Response) => {
   const userId = req.user?.userId;
@@ -95,6 +96,33 @@ const toggleBlockUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// multer: memory storage, max 5 MB, images only
+export const uploadMiddleware = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    if (!file.mimetype.startsWith('image/')) {
+      return cb(new AppError(400, 'Only image files are allowed') as unknown as null, false);
+    }
+    cb(null, true);
+  },
+}).single('photo');
+
+const uploadPhoto = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user?.userId;
+  if (!userId) throw new AppError(401, 'You are not authorized');
+  if (!req.file) throw new AppError(400, 'No file uploaded');
+
+  const result = await userService.uploadProfilePhoto(userId, req.file.buffer, req.file.mimetype);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Profile photo uploaded successfully',
+    data: result,
+  });
+});
+
 export const userController = {
   getMyProfile,
   updateMyProfile,
@@ -102,4 +130,5 @@ export const userController = {
   getAllUsers,
   getSingleUser,
   toggleBlockUser,
+  uploadPhoto,
 };

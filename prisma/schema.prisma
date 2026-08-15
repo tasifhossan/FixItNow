@@ -48,6 +48,7 @@ model User {
   password           String
   phone              String
   role               Role
+  profilePhoto       String?
   isBlocked          Boolean            @default(false)
   createdAt          DateTime           @default(now())
   updatedAt          DateTime           @updatedAt

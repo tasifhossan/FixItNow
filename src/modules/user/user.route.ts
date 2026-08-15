@@ -2,7 +2,7 @@ import { Router } from 'express';
 import auth from '../../middlewares/auth.js';
 import roleGuard from '../../middlewares/roleGuard.js';
 import validateRequest from '../../middlewares/validateRequest.js';
-import { userController } from './user.controller.js';
+import { userController, uploadMiddleware } from './user.controller.js';
 import {
   changePasswordValidation,
   updateProfileValidation,
@@ -28,6 +28,14 @@ router.patch(
   auth,
   validateRequest(changePasswordValidation),
   userController.changePassword
+);
+
+// Profile photo upload — multipart/form-data, field name: "photo"
+router.post(
+  '/me/photo',
+  auth,
+  uploadMiddleware,
+  userController.uploadPhoto
 );
 
 router.get(

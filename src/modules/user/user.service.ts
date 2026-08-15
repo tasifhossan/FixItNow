@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import AppError from '../../errors/AppError.js';
 import { prisma } from '../../shared/prisma.js';
 import type { Prisma } from '../../../generated/prisma/client.js';
+import cloudinary from '../../utils/cloudinary.js';
 
 const getMyProfile = async (userId: string) => {
   const user = await prisma.user.findUnique({
@@ -190,6 +191,34 @@ const toggleBlockUser = async (id: string) => {
   return userWithoutPassword;
 };
 
+const uploadProfilePhoto = async (userId: string, fileBuffer: Buffer, mimetype: string): Promise<{ profilePhoto: string }> => {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) throw new AppError(404, 'User not found');
+
+  // Upload buffer to Cloudinary via upload_stream
+  const secureUrl = await new Promise<string>((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder: 'fixitnow/profiles',
+        resource_type: 'image',
+        transformation: [{ width: 400, height: 400, crop: 'fill', gravity: 'face' }],
+      },
+      (error, result) => {
+        if (error || !result) return reject(error ?? new Error('Cloudinary upload failed'));
+        resolve(result.secure_url);
+      }
+    );
+    uploadStream.end(fileBuffer);
+  });
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: { profilePhoto: secureUrl },
+  });
+
+  return { profilePhoto: secureUrl };
+};
+
 export const userService = {
   getMyProfile,
   updateMyProfile,
@@ -197,4 +226,5 @@ export const userService = {
   getAllUsers,
   getSingleUser,
   toggleBlockUser,
+  uploadProfilePhoto,
 };
