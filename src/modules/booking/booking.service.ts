@@ -64,11 +64,12 @@ const createBooking = async (
     throw new AppError(400, 'Technician is not available');
   }
 
-  // 1a. Verify working hours for scheduledDate exist and the requested time is a valid slot
+  // 1a. Verify working hours for scheduledDate exist and the requested time is a valid slot (Asia/Dhaka local time)
   const reqDate = new Date(payload.scheduledDate);
-  const dayOfWeek = reqDate.getUTCDay();
-  const reqHours = reqDate.getUTCHours();
-  const reqMinutes = reqDate.getUTCMinutes();
+  const dhakaDate = new Date(reqDate.getTime() + 6 * 60 * 60 * 1000);
+  const dayOfWeek = dhakaDate.getUTCDay();
+  const reqHours = dhakaDate.getUTCHours();
+  const reqMinutes = dhakaDate.getUTCMinutes();
   const reqTimeStr = `${String(reqHours).padStart(2, '0')}:${String(reqMinutes).padStart(2, '0')}`;
 
   const workingHours = await prisma.workingHours.findUnique({

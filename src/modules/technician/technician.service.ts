@@ -374,8 +374,8 @@ const getAvailableSlots = async (id: string, dateString: string) => {
 
   const allSlots = getSlotsForDay(workingHours.startTime, workingHours.endTime, 60);
 
-  const startOfDay = new Date(`${dateString}T00:00:00.000Z`);
-  const endOfDay = new Date(`${dateString}T23:59:59.999Z`);
+  const startOfDay = new Date(Date.parse(`${dateString}T00:00:00.000Z`) - 6 * 60 * 60 * 1000);
+  const endOfDay = new Date(Date.parse(`${dateString}T23:59:59.999Z`) - 6 * 60 * 60 * 1000);
 
   const bookings = await prisma.booking.findMany({
     where: {
@@ -394,7 +394,7 @@ const getAvailableSlots = async (id: string, dateString: string) => {
   });
 
   const bookedSlots = bookings.map((b) => {
-    const d = new Date(b.scheduledDate);
+    const d = new Date(b.scheduledDate.getTime() + 6 * 60 * 60 * 1000);
     const h = d.getUTCHours();
     const m = d.getUTCMinutes();
     return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
