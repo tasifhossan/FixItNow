@@ -1,6 +1,7 @@
 import AppError from '../../errors/AppError.js';
 import { prisma } from '../../shared/prisma.js';
 import type { Prisma } from '../../../generated/prisma/client.js';
+import { toDhakaTime } from '../../utils/date.js';
 
 const userSelect = {
   id: true,
@@ -66,7 +67,7 @@ const createBooking = async (
 
   // 1a. Verify working hours for scheduledDate exist and the requested time is a valid slot (Asia/Dhaka local time)
   const reqDate = new Date(payload.scheduledDate);
-  const dhakaDate = new Date(reqDate.getTime() + 6 * 60 * 60 * 1000);
+  const dhakaDate = toDhakaTime(reqDate);
   const dayOfWeek = dhakaDate.getUTCDay();
   const reqHours = dhakaDate.getUTCHours();
   const reqMinutes = dhakaDate.getUTCMinutes();

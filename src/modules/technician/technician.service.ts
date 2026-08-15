@@ -1,6 +1,7 @@
 import AppError from '../../errors/AppError.js';
 import { prisma } from '../../shared/prisma.js';
 import type { Prisma } from '../../../generated/prisma/client.js';
+import { toDhakaTime, DHAKA_OFFSET_MS } from '../../utils/date.js';
 
 const userSelect = {
   id: true,
@@ -374,8 +375,8 @@ const getAvailableSlots = async (id: string, dateString: string) => {
 
   const allSlots = getSlotsForDay(workingHours.startTime, workingHours.endTime, 60);
 
-  const startOfDay = new Date(Date.parse(`${dateString}T00:00:00.000Z`) - 6 * 60 * 60 * 1000);
-  const endOfDay = new Date(Date.parse(`${dateString}T23:59:59.999Z`) - 6 * 60 * 60 * 1000);
+  const startOfDay = new Date(Date.parse(`${dateString}T00:00:00.000Z`) - DHAKA_OFFSET_MS);
+  const endOfDay = new Date(Date.parse(`${dateString}T23:59:59.999Z`) - DHAKA_OFFSET_MS);
 
   const bookings = await prisma.booking.findMany({
     where: {
@@ -394,7 +395,7 @@ const getAvailableSlots = async (id: string, dateString: string) => {
   });
 
   const bookedSlots = bookings.map((b) => {
-    const d = new Date(new Date(b.scheduledDate).getTime() + 6 * 60 * 60 * 1000);
+    const d = toDhakaTime(b.scheduledDate);
     const h = d.getUTCHours();
     const m = d.getUTCMinutes();
     return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
