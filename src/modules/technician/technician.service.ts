@@ -394,7 +394,7 @@ const getAvailableSlots = async (id: string, dateString: string) => {
   });
 
   const bookedSlots = bookings.map((b) => {
-    const d = new Date(b.scheduledDate.getTime() + 6 * 60 * 60 * 1000);
+    const d = new Date(new Date(b.scheduledDate).getTime() + 6 * 60 * 60 * 1000);
     const h = d.getUTCHours();
     const m = d.getUTCMinutes();
     return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
