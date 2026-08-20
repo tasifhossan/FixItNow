@@ -27,5 +27,12 @@ router.post(
   authController.logout
 );
 
+// ─── Bridge: one-time migration for pre-existing backend-domain sessions ───────
+// GET  /bridge          → browser redirect, reads HttpOnly cookie, issues bridge_code
+// POST /bridge/exchange → exchanges single-use bridge_code for { accessToken, refreshToken }
+router.get('/bridge', authController.bridge);
+router.post('/bridge/exchange', authController.bridgeExchange);
+
 export const authRoutes = router;
 export default authRoutes;
+
