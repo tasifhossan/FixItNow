@@ -40,12 +40,14 @@ const login = catchAsync(async (req: Request, res: Response) => {
 });
 
 const refreshToken = catchAsync(async (req: Request, res: Response) => {
-  const refreshToken = req.cookies?.refreshToken;
-  if (!refreshToken) {
+  // Accept token from HttpOnly cookie first; fall back to request body
+  // (body fallback handles cross-origin cookie blocking on Vercel)
+  const token = req.cookies?.refreshToken || req.body?.refreshToken;
+  if (!token) {
     throw new AppError(401, 'Refresh token is missing');
   }
 
-  const result = await authService.refreshToken(refreshToken);
+  const result = await authService.refreshToken(token);
 
   sendResponse(res, {
     statusCode: 200,

@@ -132,9 +132,11 @@ const refreshToken = async (token: string) => {
   };
 
   const accessToken = generateAccessToken(tokenPayload);
+  const newRefreshToken = generateRefreshToken(tokenPayload);
 
   return {
     accessToken,
+    refreshToken: newRefreshToken,
   };
 };
 
