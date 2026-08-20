@@ -45,10 +45,22 @@ const getAllServices = async (query: {
   }
 
   if (searchTerm) {
-    whereConditions.name = {
-      contains: searchTerm,
-      mode: 'insensitive',
-    };
+    whereConditions.OR = [
+      {
+        name: {
+          contains: searchTerm,
+          mode: 'insensitive',
+        },
+      },
+      {
+        category: {
+          name: {
+            contains: searchTerm,
+            mode: 'insensitive',
+          },
+        },
+      },
+    ];
   }
 
   const [total, result] = await prisma.$transaction([
