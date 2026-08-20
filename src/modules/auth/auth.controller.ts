@@ -20,9 +20,11 @@ const login = catchAsync(async (req: Request, res: Response) => {
   const result = await authService.loginUser(req.body);
   const { refreshToken, accessToken, user } = result;
 
+  const isProduction = config.env === 'production';
   res.cookie('refreshToken', refreshToken, {
-    secure: config.env === 'production',
+    secure: isProduction,
     httpOnly: true,
+    sameSite: isProduction ? 'none' : 'lax',
     maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
   });
 
@@ -54,9 +56,11 @@ const refreshToken = catchAsync(async (req: Request, res: Response) => {
 });
 
 const logout = catchAsync(async (req: Request, res: Response) => {
+  const isProduction = config.env === 'production';
   res.clearCookie('refreshToken', {
-    secure: config.env === 'production',
+    secure: isProduction,
     httpOnly: true,
+    sameSite: isProduction ? 'none' : 'lax',
   });
 
   sendResponse(res, {
