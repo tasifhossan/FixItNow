@@ -1,6 +1,6 @@
 import AppError from '../../errors/AppError.js';
 import { prisma } from '../../shared/prisma.js';
-import type { Prisma } from '../../../generated/prisma/client.js';
+import type { Prisma } from '@prisma/client';
 
 const createService = async (payload: {
   name: string;

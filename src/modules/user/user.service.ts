@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import AppError from '../../errors/AppError.js';
 import { prisma } from '../../shared/prisma.js';
-import type { Prisma } from '../../../generated/prisma/client.js';
+import type { Prisma } from '@prisma/client';
 import cloudinary from '../../utils/cloudinary.js';
 
 const getMyProfile = async (userId: string) => {

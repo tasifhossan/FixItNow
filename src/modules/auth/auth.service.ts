@@ -8,7 +8,7 @@ import {
   verifyRefreshToken,
 } from '../../utils/jwtHelpers.js';
 import { registerValidation, loginValidation } from './auth.validation.js';
-import type { Prisma } from '../../../generated/prisma/client.js';
+import type { Prisma } from '@prisma/client';
 
 type TRegisterPayload = z.infer<typeof registerValidation>['body'];
 type TLoginPayload = z.infer<typeof loginValidation>['body'];

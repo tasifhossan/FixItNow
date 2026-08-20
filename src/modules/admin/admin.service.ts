@@ -1,5 +1,5 @@
 import AppError from '../../errors/AppError.js';
-import type { Prisma } from '../../../generated/prisma/client.js';
+import type { Prisma } from '@prisma/client';
 import { prisma } from '../../shared/prisma.js';
 
 const userSelect = {
