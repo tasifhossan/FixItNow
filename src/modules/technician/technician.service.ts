@@ -21,8 +21,9 @@ const getAllTechnicians = async (query: {
   page?: string | number;
   limit?: string | number;
   includeUnverified?: string | boolean;
+  serviceId?: string;
 }) => {
-  const { minRating, isAvailable, searchTerm, page = 1, limit = 10, includeUnverified } = query;
+  const { minRating, isAvailable, searchTerm, page = 1, limit = 10, includeUnverified, serviceId } = query;
 
   const parsedPage = Number(page) || 1;
   const parsedLimit = Number(limit) || 10;
@@ -45,6 +46,14 @@ const getAllTechnicians = async (query: {
 
   if (includeUnverified !== 'true' && includeUnverified !== true) {
     whereConditions.isVerified = true;
+  }
+
+  if (serviceId) {
+    whereConditions.services = {
+      some: {
+        id: serviceId,
+      },
+    };
   }
 
   if (searchTerm) {
