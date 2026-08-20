@@ -9,6 +9,7 @@ const userSelect = {
   email: true,
   phone: true,
   role: true,
+  profilePhoto: true,
   isBlocked: true,
   createdAt: true,
   updatedAt: true,
